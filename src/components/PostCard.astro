@@ -1,0 +1,40 @@
+---
+import { fmtDate } from '../utils/date';
+import { href } from '../utils/url';
+
+interface Props {
+  post: {
+    id: string;
+    data: {
+      title: string;
+      description: string;
+      date: Date;
+      tags: string[];
+    };
+  };
+}
+
+const { post } = Astro.props;
+const { title, description, date, tags } = post.data;
+---
+
+<li class="post-item">
+  <div class="meta">
+    <time datetime={date.toISOString()}>{fmtDate(date)}</time>
+  </div>
+  <h2><a href={href(`/posts/${post.id}/`)}>{title}</a></h2>
+  <p>{description}</p>
+  {
+    tags.length > 0 && (
+      <ul class="tags">
+        {tags.map((tag) => (
+          <li>
+            <a class="tag" href={href(`/tags/${encodeURIComponent(tag)}/`)}>
+              {tag}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</li>

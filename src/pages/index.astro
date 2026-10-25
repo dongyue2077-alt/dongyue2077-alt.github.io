@@ -1,0 +1,36 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import { SITE } from '../consts';
+import { href } from '../utils/url';
+
+const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+
+const recent = posts.slice(0, 5);
+---
+
+<BaseLayout>
+  <section class="hero">
+    <h1>写点东西，留个记录</h1>
+    <p>{SITE.description}共 {posts.length} 篇，按时间排。</p>
+  </section>
+
+  {
+    recent.length === 0 ? (
+      <p class="empty">
+        还没有文章。去 <code>src/content/posts/</code> 新建一个 <code>.md</code> 文件就能开始。
+      </p>
+    ) : (
+      <>
+        <h2 class="section-title">最近</h2>
+        <ul class="post-list">
+          {recent.map((post) => <PostCard post={post} />)}
+        </ul>
+        <a class="more" href={href('/archive/')}>全部 {posts.length} 篇 →</a>
+      </>
+    )
+  }
+</BaseLayout>

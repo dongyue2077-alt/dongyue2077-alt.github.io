@@ -1,0 +1,38 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../consts';
+---
+
+<BaseLayout title="关于" description="关于这个博客和它的作者。">
+  <article class="prose" style="max-width:var(--measure);">
+    <h1 style="font-size:1.6rem;margin:0 0 1.5rem;">关于</h1>
+
+    <p>
+      这是 {SITE.author} 的地方。写长文，也记零散的技术笔记。
+    </p>
+
+    <p>
+      目的很朴素：留一份按时间排的记录，过几年回来看，能看见自己是怎么一点点变的。
+      所以这里没有评论区、没有阅读量、没有推荐算法，也不打算被搜索引擎收录。
+    </p>
+
+    <h2>关于内容</h2>
+
+    <p>
+      两类东西混在一起写：一类是想清楚才动笔的长文，一类是做事时顺手记下的笔记。
+      后者会过时，所以文章页上会显示"更新于"。
+    </p>
+
+    <h2>联系</h2>
+
+    <p>
+      认识我的人直接发消息就行。
+    </p>
+
+    <hr />
+
+    <p style="color:var(--fg-muted);font-size:0.9rem;">
+      这段文字是占位符，改 <code>src/pages/about.astro</code> 就行。
+    </p>
+  </article>
+</BaseLayout>

@@ -1,0 +1,75 @@
+---
+import { SITE, NAV } from '../consts';
+import { href, stripBase } from '../utils/url';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title, description = SITE.description } = Astro.props;
+
+const pageTitle = title ? `${title} · ${SITE.title}` : SITE.title;
+const siteUrl = import.meta.env.SITE ?? Astro.url.origin;
+const current = stripBase(Astro.url.pathname);
+const canonical = new URL(href(current), siteUrl);
+const rssUrl = new URL(href('/rss.xml'), siteUrl).href;
+
+// 首页只有完全相等才算当前，其余用前缀匹配
+const isActive = (path: string) => (path === '/' ? current === '/' : current.startsWith(path));
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical.href} />
+
+    {/*
+      这里是有意为之：站长只希望自己和朋友能看到。
+      想被搜索引擎收录时，删掉下面这一行，并去掉 public/robots.txt。
+    */}
+    <meta name="robots" content="noindex, nofollow" />
+
+    <link rel="alternate" type="application/rss+xml" title={SITE.title} href={rssUrl} />
+    <meta name="theme-color" content="#fdfcfa" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#101012" media="(prefers-color-scheme: dark)" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical.href} />
+    <meta name="twitter:card" content="summary" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrap--wide inner">
+        <a class="brand" href={href('/')}>{SITE.title}</a>
+        <nav class="site-nav">
+          {
+            NAV.map((item) => (
+              <a href={href(item.href)} aria-current={isActive(item.href) ? 'page' : undefined}>
+                {item.label}
+              </a>
+            ))
+          }
+        </nav>
+      </div>
+    </header>
+
+    <main class="wrap--wide">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap--wide inner">
+        <span>© {new Date().getFullYear()} {SITE.author}</span>
+        <a href={href('/rss.xml')}>RSS</a>
+      </div>
+    </footer>
+  </body>
+</html>

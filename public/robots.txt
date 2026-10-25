@@ -1,0 +1,4 @@
+# 这是一个私人记录站点，不希望被搜索引擎收录。
+# 想公开时，删掉这个文件，并去掉 BaseLayout.astro 里的 noindex。
+User-agent: *
+Disallow: /
