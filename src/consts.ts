@@ -8,9 +8,10 @@ export const SITE = {
   description: '长文与笔记。写给三年后的自己，也写给恰好路过的朋友。',
 } as const;
 
-/** 导航项。先保持四项，加页面时再往里塞。 */
+/** 导航项。加页面时再往里塞，超过六项手机上会换行。 */
 export const NAV = [
   { href: '/', label: '首页' },
+  { href: '/notes/', label: '记录' },
   { href: '/archive/', label: '归档' },
   { href: '/tags/', label: '标签' },
   { href: '/about/', label: '关于' },

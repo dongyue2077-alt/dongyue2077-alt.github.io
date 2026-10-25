@@ -1,0 +1,46 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { fmtDate } from '../../utils/date';
+import { groupNotes } from '../../utils/notes';
+
+const sources = await getCollection('notes', ({ data }) => !data.draft);
+const days = groupNotes(sources);
+
+const WEEKDAYS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+
+const total = days.reduce((sum, day) => sum + day.entries.length, 0);
+---
+
+<BaseLayout title="记录" description="流水账。按天排，最新的在上面。">
+  <h1 class="page-title">
+    记录
+    {total > 0 && <span class="page-title__meta">{total} 条 · {days.length} 天</span>}
+  </h1>
+
+  {
+    days.length === 0 ? (
+      <p class="empty">
+        还没有记录。在终端跑 <code>bash scripts/note.sh '今天做了什么' --push</code> 就能记下第一条。
+      </p>
+    ) : (
+      days.map((day) => (
+        <section class="note-day">
+          <h2>
+            <time datetime={day.date.toISOString()}>{fmtDate(day.date)}</time>
+            <span class="weekday">{WEEKDAYS[day.date.getUTCDay()]}</span>
+            <span class="count">{day.entries.length} 条</span>
+          </h2>
+          <ul class="note-list">
+            {day.entries.map((entry) => (
+              <li class="note-entry">
+                <span class="note-time">{entry.time ?? ''}</span>
+                <div class="note-text" set:html={entry.html} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    )
+  }
+</BaseLayout>

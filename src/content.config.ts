@@ -22,4 +22,18 @@ const posts = defineCollection({
   }),
 });
 
-export const collections = { posts };
+/**
+ * 流水账。一天一个文件，正文是 `- HH:MM 内容` 的行列表。
+ *
+ * 不设 title / tags：记的时候不该有填写成本。
+ * 日期来自 frontmatter，条目由 scripts/note.sh 追加。
+ */
+const notes = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/notes' }),
+  schema: z.object({
+    date: z.coerce.date(),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { posts, notes };

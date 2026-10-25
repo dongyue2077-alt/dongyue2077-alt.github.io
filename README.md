@@ -47,6 +47,29 @@ tags: [随笔]
 
 **注意**：`draft: true` 只影响构建，文件本身仍在 git 里。草稿不想被看到就别提交，或者把仓库设为私有。
 
+## 记流水账
+
+短记录不进文章列表，单独的时间线在 `/notes/`，首页也会显示最近 5 条。
+
+```bash
+# 记一笔，只写本地
+bash scripts/note.sh "今天做了什么"
+
+# 记一笔并立即发布（约 1 分钟后上线）
+bash scripts/note.sh "今天做了什么" --push
+
+# 内容里有引号时走 stdin，避免转义
+printf '%s' "带 '引号' 的内容" | bash scripts/note.sh --push
+```
+
+存储是 `src/content/notes/YYYY-MM-DD.md`，一天一个文件，`- HH:MM 内容` 一行一条。
+支持 `**粗体**`、`` `行内代码` `` 和裸链接，其余按纯文本处理。
+
+**让 Hermes 学会这个动作**：仓库根目录的 [AGENTS.md](AGENTS.md) 已经写好了规则。
+在仓库目录下启动 Hermes（或 `hermes --in ~/Desktop/dsh`），说"记一笔：……"，它就会调用脚本。
+
+**注意**：仓库公开，记录即公开。写进去的东西会永久留在 git 历史里。
+
 ## 目录结构
 
 ```
@@ -54,13 +77,16 @@ src/
 ├── consts.ts              站点名、作者、导航 —— 改这里
 ├── content.config.ts      文章字段定义（Zod 校验）
 ├── content/posts/         ← 所有文章
+├── content/notes/         ← 流水账，一天一个文件
 ├── layouts/BaseLayout.astro
 ├── components/PostCard.astro
 ├── utils/
 │   ├── date.ts            日期格式化与按年分组
+│   ├── notes.ts           流水账条目解析与行内渲染
 │   └── url.ts             内部链接统一入口（处理 base）
 ├── pages/
-│   ├── index.astro        首页
+│   ├── index.astro        首页（文章 + 最近记录）
+│   ├── notes/index.astro  流水账时间线
 │   ├── archive.astro      按年归档
 │   ├── posts/[...slug].astro
 │   ├── tags/              标签索引与标签页
@@ -68,6 +94,9 @@ src/
 │   ├── 404.astro
 │   └── rss.xml.ts
 └── styles/global.css      全部样式，手写，无 CSS 框架
+
+scripts/note.sh            记一笔流水账
+AGENTS.md                  给 Hermes 等 agent 的仓库约定
 ```
 
 ## 部署到 GitHub Pages

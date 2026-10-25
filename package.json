@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "note": "bash scripts/note.sh",
+    "note:push": "bash scripts/note.sh --push"
   },
   "dependencies": {
     "astro": "^5.0.0"

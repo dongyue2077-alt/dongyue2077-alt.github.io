@@ -4,12 +4,18 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import PostCard from '../components/PostCard.astro';
 import { SITE } from '../consts';
 import { href } from '../utils/url';
+import { fmtDate } from '../utils/date';
+import { groupNotes, latestEntries } from '../utils/notes';
 
 const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
 );
 
 const recent = posts.slice(0, 5);
+
+const noteSources = await getCollection('notes', ({ data }) => !data.draft);
+const noteDays = groupNotes(noteSources);
+const recentNotes = latestEntries(noteDays, 5);
 ---
 
 <BaseLayout>
@@ -31,6 +37,26 @@ const recent = posts.slice(0, 5);
         </ul>
         <a class="more" href={href('/archive/')}>全部 {posts.length} 篇 →</a>
       </>
+    )
+  }
+
+  {
+    recentNotes.length > 0 && (
+      <section class="home-notes">
+        <h2 class="section-title">最近记录</h2>
+        <ul class="note-list">
+          {recentNotes.map(({ date, entry }) => (
+            <li class="note-entry">
+              <span class="note-time">
+                {fmtDate(date).slice(5)}
+                {entry.time ? ` ${entry.time}` : ''}
+              </span>
+              <div class="note-text" set:html={entry.html} />
+            </li>
+          ))}
+        </ul>
+        <a class="more" href={href('/notes/')}>全部记录 →</a>
+      </section>
     )
   }
 </BaseLayout>
